@@ -86,6 +86,39 @@ export type Database = {
           },
         ]
       }
+      question_events: {
+        Row: {
+          bonus_points: number | null
+          created_at: string
+          game_id: string
+          id: string
+          player_id: string | null
+          points: number
+          question_number: number
+          team_id: string | null
+        }
+        Insert: {
+          bonus_points?: number | null
+          created_at?: string
+          game_id: string
+          id?: string
+          player_id?: string | null
+          points?: number
+          question_number: number
+          team_id?: string | null
+        }
+        Update: {
+          bonus_points?: number | null
+          created_at?: string
+          game_id?: string
+          id?: string
+          player_id?: string | null
+          points?: number
+          question_number?: number
+          team_id?: string | null
+        }
+        Relationships: []
+      }
       teams: {
         Row: {
           created_at: string

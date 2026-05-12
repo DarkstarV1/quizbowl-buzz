@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import type { Game, Team, Player } from "@/lib/game";
+import type { Game, Team, Player, QuestionEvent } from "@/lib/game";
 
 export function useGameState(code: string | undefined) {
   const [game, setGame] = useState<Game | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
+  const [events, setEvents] = useState<QuestionEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -28,13 +29,15 @@ export function useGameState(code: string | undefined) {
       }
       gameId = g.id;
       setGame(g as Game);
-      const [{ data: ts }, { data: ps }] = await Promise.all([
+      const [{ data: ts }, { data: ps }, { data: ev }] = await Promise.all([
         supabase.from("teams").select("*").eq("game_id", g.id).order("side"),
         supabase.from("players").select("*").eq("game_id", g.id).order("created_at"),
+        supabase.from("question_events").select("*").eq("game_id", g.id).order("created_at"),
       ]);
       if (cancelled) return;
       setTeams((ts ?? []) as Team[]);
       setPlayers((ps ?? []) as Player[]);
+      setEvents((ev ?? []) as QuestionEvent[]);
       setLoading(false);
     }
     load();
@@ -65,6 +68,15 @@ export function useGameState(code: string | undefined) {
           return [...prev.filter((p) => p.id !== rec.id), payload.new as Player];
         });
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "question_events" }, (payload) => {
+        const rec = (payload.new ?? payload.old) as QuestionEvent;
+        if (!gameId || rec.game_id !== gameId) return;
+        setEvents((prev) => {
+          if (payload.eventType === "DELETE") return prev.filter((e) => e.id !== rec.id);
+          const next = [...prev.filter((e) => e.id !== rec.id), payload.new as QuestionEvent];
+          return next.sort((a, b) => a.created_at.localeCompare(b.created_at));
+        });
+      })
       .subscribe();
 
     return () => {
@@ -73,5 +85,5 @@ export function useGameState(code: string | undefined) {
     };
   }, [code]);
 
-  return { game, teams, players, loading, notFound };
+  return { game, teams, players, events, loading, notFound };
 }

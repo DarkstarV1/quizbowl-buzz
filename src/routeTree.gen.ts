@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as JoinRouteImport } from './routes/join'
 import { Route as CreateRouteImport } from './routes/create'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WatchCodeRouteImport } from './routes/watch.$code'
 import { Route as PlayCodeRouteImport } from './routes/play.$code'
 import { Route as ManageCodeRouteImport } from './routes/manage.$code'
 
@@ -28,6 +29,11 @@ const CreateRoute = CreateRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WatchCodeRoute = WatchCodeRouteImport.update({
+  id: '/watch/$code',
+  path: '/watch/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlayCodeRoute = PlayCodeRouteImport.update({
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/join': typeof JoinRoute
   '/manage/$code': typeof ManageCodeRoute
   '/play/$code': typeof PlayCodeRoute
+  '/watch/$code': typeof WatchCodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/join': typeof JoinRoute
   '/manage/$code': typeof ManageCodeRoute
   '/play/$code': typeof PlayCodeRoute
+  '/watch/$code': typeof WatchCodeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,33 @@ export interface FileRoutesById {
   '/join': typeof JoinRoute
   '/manage/$code': typeof ManageCodeRoute
   '/play/$code': typeof PlayCodeRoute
+  '/watch/$code': typeof WatchCodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/create' | '/join' | '/manage/$code' | '/play/$code'
+  fullPaths:
+    | '/'
+    | '/create'
+    | '/join'
+    | '/manage/$code'
+    | '/play/$code'
+    | '/watch/$code'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/create' | '/join' | '/manage/$code' | '/play/$code'
-  id: '__root__' | '/' | '/create' | '/join' | '/manage/$code' | '/play/$code'
+  to:
+    | '/'
+    | '/create'
+    | '/join'
+    | '/manage/$code'
+    | '/play/$code'
+    | '/watch/$code'
+  id:
+    | '__root__'
+    | '/'
+    | '/create'
+    | '/join'
+    | '/manage/$code'
+    | '/play/$code'
+    | '/watch/$code'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +105,7 @@ export interface RootRouteChildren {
   JoinRoute: typeof JoinRoute
   ManageCodeRoute: typeof ManageCodeRoute
   PlayCodeRoute: typeof PlayCodeRoute
+  WatchCodeRoute: typeof WatchCodeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -102,6 +131,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/watch/$code': {
+      id: '/watch/$code'
+      path: '/watch/$code'
+      fullPath: '/watch/$code'
+      preLoaderRoute: typeof WatchCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/play/$code': {
       id: '/play/$code'
       path: '/play/$code'
@@ -125,17 +161,8 @@ const rootRouteChildren: RootRouteChildren = {
   JoinRoute: JoinRoute,
   ManageCodeRoute: ManageCodeRoute,
   PlayCodeRoute: PlayCodeRoute,
+  WatchCodeRoute: WatchCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
