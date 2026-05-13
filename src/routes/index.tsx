@@ -5,9 +5,9 @@ import { Eye, Zap } from "lucide-react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "BuzzBowl — Quizbowl Buzzer App" },
-      { name: "description", content: "Run live quizbowl matches with real-time buzzing, team scoring, and bonus rounds." },
-      { property: "og:title", content: "BuzzBowl — Quizbowl Buzzer App" },
+      { title: "Quibbol Bz" },
+      { name: "description", content: "Run live quizbowl matches with in app scoring and substitution." },
+      { property: "og:title", content: "Quizbowl Buzzer App" },
       { property: "og:description", content: "Run live quizbowl matches with real-time buzzing, team scoring, and bonus rounds." },
     ],
   }),
@@ -32,7 +32,7 @@ function Home() {
           <Zap className="w-4 h-4" /> Live quizbowl scoring
         </div>
         <h1 className="text-5xl sm:text-6xl font-bold tracking-tight text-foreground">
-          BuzzBowl
+          Quibbol Buzz
         </h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-md mx-auto">
           The fastest way to run a quizbowl match. Buzz in, score teams, and manage rosters in real time.
